@@ -1,31 +1,48 @@
 package com.example.hypebape
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.datastore.preferences.preferencesDataStore
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.hypebape.navigation.NavigationGraph
-import com.example.hypebape.ui.theme.HYPEBAPETheme
+import com.example.hypebape.navigation.Screens
 import dagger.hilt.android.AndroidEntryPoint
 
+
+val Context.dataStore by preferencesDataStore(name = "PREFERENCES")
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity() : ComponentActivity() {
+    private lateinit var navHostController: NavHostController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val viewModel = MainViewModel()
+        val viewModel = MainViewModel(this)
         installSplashScreen().setKeepOnScreenCondition{
             viewModel.splashLoading
         }
-        viewModel.checkAuthentication()
+
+
+
+
         setContent {
-            NavigationGraph()
+            navHostController = rememberNavController()
+            NavigationGraph(navHostController)
+            viewModel.navegarALogin.observe(this) { navegarLogin ->
+                if (navegarLogin) {
+                    navHostController.navigate(Screens.SignUpScreen.route)
+                } else {
+                    Log.d("navegarLogin", "No vamos a navegar")
+                }
+            }
+            viewModel.getOnBoarding()
+            viewModel.checkAuthentication()
         }
     }
+
+
 }

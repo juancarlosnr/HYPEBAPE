@@ -1,5 +1,6 @@
 package com.example.hypebape.presentation.onboarding
 
+import android.content.Context
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
@@ -12,10 +13,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.KeyboardArrowLeft
 import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -23,17 +26,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
 import androidx.navigation.NavController
+import com.example.hypebape.dataStore
 import com.example.hypebape.navigation.Screens
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @ExperimentalPagerApi
 @Composable
 fun OnBoarding(navController: NavController) {
-
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
     Column(Modifier.fillMaxSize()) {
@@ -58,8 +65,11 @@ fun OnBoarding(navController: NavController) {
                 scope.launch {
                     state.scrollToPage(state.currentPage + 1)
                 }
-            if(state.currentPage == 2){
+            if (state.currentPage == 2) {
                 navController.navigate(Screens.SignInScreen.route)
+                scope.launch {
+                    saveOnBoarding(context)
+                }
             }
         }
 
@@ -69,6 +79,8 @@ fun OnBoarding(navController: NavController) {
 
 @Composable
 fun TopSection(navController: NavController) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -77,7 +89,12 @@ fun TopSection(navController: NavController) {
 
         //skip button
         TextButton(
-            onClick = { navController.navigate(Screens.SignInScreen.route) },
+            onClick = {
+                navController.navigate(Screens.SignInScreen.route)
+                scope.launch {
+                    saveOnBoarding(context)
+                }
+            },
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {
             Text("Skip", color = MaterialTheme.colors.onBackground)
@@ -172,5 +189,11 @@ fun OnBoardingItem(
             color = MaterialTheme.colors.onBackground.copy(alpha = 0.8f),
             textAlign = TextAlign.Center
         )
+    }
+}
+
+private suspend fun saveOnBoarding(contexto: Context) {
+    contexto.dataStore.edit { preference ->
+        preference[booleanPreferencesKey("on_boarding")] = true
     }
 }
