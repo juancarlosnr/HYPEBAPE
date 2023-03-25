@@ -1,10 +1,8 @@
 package com.example.hypebape.presentation.login_screen
 
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.R
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -13,20 +11,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.hypebape.navigation.Screens
 import com.example.hypebape.ui.theme.RegularFont
 import com.example.hypebape.ui.theme.lightBlue
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.launch
 
 @Composable
 fun SignInScreen(
+    navController: NavController,
     viewModel: SignInViewModel = hiltViewModel()
 ) {
     var email by rememberSaveable { mutableStateOf("") }
@@ -103,10 +100,15 @@ fun SignInScreen(
 
         }
         Text(
+            modifier = Modifier
+            .clickable {
+                navController.navigate(Screens.SignUpScreen.route)
+            },
             text = "New User? Sign Up ",
             fontWeight = FontWeight.Bold,
             color = Color.Black,
-            fontFamily = RegularFont
+            fontFamily = RegularFont,
+
         )
         LaunchedEffect(key1 = state.value?.isSuccess) {
             scope.launch {

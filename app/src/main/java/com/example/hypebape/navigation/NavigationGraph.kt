@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.hypebape.presentation.login_screen.SignInScreen
+import com.example.hypebape.presentation.signup_screen.SignUpScreen
 
 @Composable
 fun NavigationGraph(
@@ -16,8 +17,10 @@ fun NavigationGraph(
         startDestination = Screens.SignInScreen.route
     ) {
         composable(route = Screens.SignInScreen.route) {
-            SignInScreen()
-
+            SignInScreen(navController)
+        }
+        composable(route = Screens.SignUpScreen.route) {
+            SignUpScreen(navController)
         }
 
     }
