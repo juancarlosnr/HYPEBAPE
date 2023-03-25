@@ -10,6 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.hypebape.navigation.NavigationGraph
 import com.example.hypebape.ui.theme.HYPEBAPETheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,6 +19,11 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val viewModel = MainViewModel()
+        installSplashScreen().setKeepOnScreenCondition{
+            viewModel.splashLoading
+        }
+        viewModel.checkAuthentication()
         setContent {
             NavigationGraph()
         }
