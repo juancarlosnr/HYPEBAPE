@@ -1,6 +1,5 @@
 package com.example.hypebape.presentation.onboarding
 
-import android.content.Context
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
@@ -13,52 +12,61 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.KeyboardArrowLeft
 import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
 import androidx.navigation.NavController
-import com.example.hypebape.dataStore
+import com.example.hypebape.R
 import com.example.hypebape.navigation.Screens
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @ExperimentalPagerApi
 @Composable
 fun OnBoarding(navController: NavController) {
-    val context = LocalContext.current
+
     val scope = rememberCoroutineScope()
 
     Column(Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Image(
+                painter = painterResource(id = R.drawable.background_home),
+                contentDescription = null,
+                modifier = Modifier
+                    .width(2000.dp)
+                    .height(1400.dp),
+                contentScale = ContentScale.Crop
+            )
         TopSection(navController)
 
         val items = OnBoardingItem.get()
-        val state = rememberPagerState(pageCount = items.size)
+        val state = rememberPagerState()
 
-        HorizontalPager(
-            state = state,
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(0.8f)
-        ) { page ->
+            HorizontalPager(
+                state = state,
+                modifier = Modifier
+                    .fillMaxSize(),
+                count = items.size
 
-            OnBoardingItem(items[page])
+            ) { page ->
 
-        }
+                OnBoardingItem(items[page])
+
+            }
+
 
         BottomSection(size = items.size, index = state.currentPage) {
             if (state.currentPage + 1 < items.size)
@@ -67,34 +75,25 @@ fun OnBoarding(navController: NavController) {
                 }
             if (state.currentPage == 2) {
                 navController.navigate(Screens.SignInScreen.route)
-                scope.launch {
-                    saveOnBoarding(context)
-                }
             }
         }
-
+        }
     }
 
 }
 
 @Composable
 fun TopSection(navController: NavController) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp)
+
     ) {
 
         //skip button
         TextButton(
-            onClick = {
-                navController.navigate(Screens.SignInScreen.route)
-                scope.launch {
-                    saveOnBoarding(context)
-                }
-            },
+            onClick = { navController.navigate(Screens.SignInScreen.route) },
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {
             Text("Skip", color = MaterialTheme.colors.onBackground)
@@ -122,10 +121,10 @@ fun BottomSection(
         FloatingActionButton(
             onClick = onNextClicked,
             modifier = Modifier.align(Alignment.CenterEnd),
-            backgroundColor = MaterialTheme.colors.primary,
+            backgroundColor = Color.White,
             contentColor = MaterialTheme.colors.onPrimary
         ) {
-            Icon(Icons.Outlined.KeyboardArrowRight, null)
+            Icon(Icons.Outlined.KeyboardArrowRight, null, tint = Color.Black)
         }
 
     }
@@ -158,8 +157,8 @@ fun Indicator(isSelected: Boolean) {
             .width(width.value)
             .clip(CircleShape)
             .background(
-                if (isSelected) MaterialTheme.colors.primary
-                else MaterialTheme.colors.onBackground.copy(alpha = 0.5f)
+                if (isSelected) Color.White
+                else Color.Gray.copy(alpha = 0.5f)
             )
     ) {
 
@@ -176,24 +175,19 @@ fun OnBoardingItem(
         modifier = Modifier.fillMaxSize()
     ) {
         Image(painter = painterResource(item.image), contentDescription = null)
-
+        Spacer(modifier = Modifier.height(15.dp))
         Text(
             text = stringResource(item.title),
             fontSize = 24.sp,
-            color = MaterialTheme.colors.onBackground,
+            color = Color.White,
+            fontFamily = FontFamily.Default,
             fontWeight = FontWeight.Bold
         )
 
         Text(
             text = stringResource(item.text),
-            color = MaterialTheme.colors.onBackground.copy(alpha = 0.8f),
+            color =Color.White.copy(alpha = 0.8f),
             textAlign = TextAlign.Center
         )
-    }
-}
-
-private suspend fun saveOnBoarding(contexto: Context) {
-    contexto.dataStore.edit { preference ->
-        preference[booleanPreferencesKey("on_boarding")] = true
     }
 }

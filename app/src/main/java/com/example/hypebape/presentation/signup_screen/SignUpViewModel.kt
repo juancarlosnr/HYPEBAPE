@@ -2,7 +2,7 @@ package com.example.hypebape.presentation.signup_screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.hypebape.data.AuthRepository
+import com.example.hypebape.data.auth.AuthRepository
 import com.example.hypebape.presentation.login_screen.SignInState
 import com.example.hypebape.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -1,4 +1,4 @@
-package com.example.hypebape.data
+package com.example.hypebape.data.auth
 
 import com.example.hypebape.util.Resource
 import com.google.firebase.auth.AuthResult
@@ -11,7 +11,7 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
-    private val firebaseAuth: FirebaseAuth):AuthRepository {
+    private val firebaseAuth: FirebaseAuth): AuthRepository {
     override fun loginUser(email: String, password: String): Flow<Resource<AuthResult>> {
         return flow {
             emit(Resource.Loading())
@@ -26,6 +26,19 @@ class AuthRepositoryImpl @Inject constructor(
         return flow {
             emit(Resource.Loading())
             val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+            emit(Resource.Success(result))
+        }.catch {
+            emit(Resource.Error(it.message.toString()))
+        }
+    }
+
+    override fun getUser(): Flow<Resource<String>> {
+        return flow{
+            emit(Resource.Loading())
+            var result = firebaseAuth.currentUser?.email
+            if(result == null){
+                result = ""
+            }
             emit(Resource.Success(result))
         }.catch {
             emit(Resource.Error(it.message.toString()))

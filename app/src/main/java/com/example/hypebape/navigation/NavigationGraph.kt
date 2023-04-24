@@ -5,6 +5,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.hypebape.ContenedorPrincipal
+import com.example.hypebape.data.home.Sneaker
 import com.example.hypebape.presentation.login_screen.SignInScreen
 import com.example.hypebape.presentation.onboarding.OnBoarding
 import com.example.hypebape.presentation.signup_screen.SignUpScreen
@@ -28,6 +30,10 @@ fun NavigationGraph(
         composable(route = Screens.OnBoardingScreen.route){
             OnBoarding(navController)
         }
+        composable(route = Screens.ContenedorPrincipal.route){
+            ContenedorPrincipal()
+        }
+
 
 
     }
